@@ -1,7 +1,7 @@
-import "./styles/main.css";
-import { Router } from "./router";
-import { DOMRenderer } from "./core/renderer";
 import { getComponent } from "./components";
+import { DOMRenderer } from "./core/renderer";
+import { Router } from "./router";
+import "./styles/main.css";
 
 declare global {
   interface Window {

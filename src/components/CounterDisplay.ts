@@ -1,5 +1,5 @@
-import { createComponent } from "../core/component";
-import { counterState } from "../store/counter";
+import { createComponent } from "@/core/component";
+import { counterState } from "@/store/counter";
 
 export default createComponent(() => {
   const count = counterState.get();

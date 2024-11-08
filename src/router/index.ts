@@ -10,11 +10,9 @@ export class Router {
   private currentRoute: Signal<string>;
 
   constructor() {
-    // Get initial route from window location
     const initialPath = window.location.pathname;
     this.currentRoute = new Signal<string>(initialPath);
 
-    // Handle browser back/forward buttons
     window.addEventListener("popstate", () => {
       this.currentRoute.set(window.location.pathname);
     });
@@ -25,7 +23,6 @@ export class Router {
   }
 
   navigate(path: string): void {
-    // Don't navigate if we're already on the path
     if (this.currentRoute.get() === path) return;
 
     window.history.pushState({}, "", path);
@@ -34,10 +31,8 @@ export class Router {
 
   getCurrentComponent(): (() => any) | null {
     const route = this.routes.find((route) => {
-      // Exact match
       if (route.path === this.currentRoute.get()) return true;
 
-      // Pattern match (for dynamic routes if you add them later)
       const pattern = new RegExp(
         "^" + route.path.replace(/:\w+/g, "([^/]+)") + "$",
       );
@@ -47,7 +42,6 @@ export class Router {
     return route?.component || null;
   }
 
-  // Helper method to get route params (for future use with dynamic routes)
   getParams(): Record<string, string> {
     const route = this.routes.find((route) => {
       const pattern = new RegExp(

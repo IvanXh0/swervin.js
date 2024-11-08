@@ -1,6 +1,6 @@
-import { effect } from "./effect";
-import { Router } from "../router";
+import { Router } from "@/router";
 import { Component } from "./component";
+import { effect } from "./effect";
 
 export class DOMRenderer {
   private container: HTMLElement;

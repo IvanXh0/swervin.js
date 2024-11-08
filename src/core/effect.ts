@@ -9,7 +9,6 @@ export function effect(fn: () => void): () => void {
 
   execute();
 
-  // Return cleanup function
   return () => {
     Signal.activeEffect = null;
   };

@@ -1,4 +1,4 @@
-import { Signal } from "../core/signal";
+import { Signal } from "@/core/signal";
 
 export interface Store<T> {
   state: Signal<T>;
