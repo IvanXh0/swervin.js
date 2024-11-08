@@ -4,7 +4,7 @@ const webpack = require("webpack");
 
 module.exports = {
   mode: "development",
-  entry: "./src/index.ts",
+  entry: ["./src/index.ts"],
   output: {
     path: path.resolve(__dirname, "dist"),
     filename: "bundle.js",
@@ -14,13 +14,14 @@ module.exports = {
     rules: [
       {
         test: /\.tsx?$/,
-        use: {
-          loader: "ts-loader",
-          options: {
-            transpileOnly: true,
-            experimentalWatchApi: true,
+        use: [
+          {
+            loader: "ts-loader",
+            options: {
+              transpileOnly: true,
+            },
           },
-        },
+        ],
         exclude: /node_modules/,
       },
       {
@@ -38,7 +39,6 @@ module.exports = {
   plugins: [
     new HtmlWebpackPlugin({
       template: "src/index.html",
-      inject: true,
     }),
     new webpack.HotModuleReplacementPlugin(),
   ],
@@ -47,23 +47,9 @@ module.exports = {
       directory: path.join(__dirname, "dist"),
     },
     historyApiFallback: true,
-    hot: "only", // Only use HMR, don't fall back to live reload
-    watchFiles: ["src/**/*"],
-    compress: true,
+    hot: true,
+    open: true,
     port: 3000,
-    client: {
-      overlay: {
-        errors: true,
-        warnings: false,
-      },
-      progress: true,
-    },
   },
-  optimization: {
-    moduleIds: "named",
-  },
-  devtool: "eval-source-map",
-  cache: {
-    type: "filesystem",
-  },
+  devtool: "source-map",
 };

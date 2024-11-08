@@ -14,10 +14,8 @@ let renderer: DOMRenderer | null = null;
 function initApp() {
   const router = new Router();
 
-  // Register routes
   router.addRoute("/", () => getComponent("TestComponent")({}));
 
-  // Add global navigation function
   window.navigate = (path: string) => router.navigate(path);
 
   const app = document.getElementById("app");
@@ -30,7 +28,6 @@ function initApp() {
   renderer.mount();
 }
 
-// Initialize app
 if (document.readyState === "loading") {
   window.addEventListener("load", initApp);
 } else {

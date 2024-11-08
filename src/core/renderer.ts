@@ -11,7 +11,6 @@ export class DOMRenderer {
   constructor(container: HTMLElement, router: Router) {
     this.container = container;
     this.router = router;
-
     this.updateListener = () => this.refresh();
     window.addEventListener("componentUpdated", this.updateListener);
   }
@@ -24,24 +23,38 @@ export class DOMRenderer {
     effect(() => {
       const componentFactory = this.router.getCurrentComponent();
 
-      if (this.currentComponent?.onDestroy) {
+      if (
+        this.currentComponent &&
+        typeof this.currentComponent.onDestroy === "function"
+      ) {
         this.currentComponent.onDestroy();
       }
 
       if (componentFactory) {
-        this.currentComponent = componentFactory();
-        this.container.innerHTML = this.currentComponent.render();
+        const newComponent = componentFactory();
+        this.currentComponent = newComponent;
 
-        if (this.currentComponent.onCreate) {
-          this.currentComponent.onCreate();
+        const renderedContent = newComponent.render();
+        this.container.innerHTML = renderedContent;
+
+        if (typeof newComponent.onCreate === "function") {
+          newComponent.onCreate();
         }
       } else {
+        this.currentComponent = null;
         this.container.innerHTML = "<div>404 - Not Found</div>";
       }
     });
   }
 
   destroy(): void {
+    if (
+      this.currentComponent &&
+      typeof this.currentComponent.onDestroy === "function"
+    ) {
+      this.currentComponent.onDestroy();
+    }
+
     window.removeEventListener("componentUpdated", this.updateListener);
   }
 }
