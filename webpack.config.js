@@ -1,36 +1,47 @@
-import { resolve as _resolve, join } from "path";
-import HtmlWebpackPlugin from "html-webpack-plugin";
+const path = require("path");
+const HtmlWebpackPlugin = require("html-webpack-plugin");
 
-export const entry = "./src/index.ts";
-export const output = {
-  path: _resolve(__dirname, "dist"),
-  filename: "bundle.js",
-};
-export const module = {
-  rules: [
-    {
-      test: /\.tsx?$/,
-      use: "ts-loader",
-      exclude: /node_modules/,
+module.exports = {
+  mode: "development",
+  entry: "./src/index.ts",
+  output: {
+    path: path.resolve(__dirname, "dist"),
+    filename: "bundle.js",
+    clean: true,
+  },
+  module: {
+    rules: [
+      {
+        test: /\.tsx?$/,
+        use: "ts-loader",
+        exclude: /node_modules/,
+      },
+      {
+        test: /\.css$/,
+        use: ["style-loader", "css-loader"],
+      },
+    ],
+  },
+  resolve: {
+    extensions: [".tsx", ".ts", ".js"],
+    alias: {
+      "@": path.resolve(__dirname, "src/"),
     },
+  },
+  plugins: [
+    new HtmlWebpackPlugin({
+      template: "src/index.html",
+      inject: true,
+    }),
   ],
-};
-export const resolve = {
-  extensions: [".tsx", ".ts", ".js"],
-  alias: {
-    "@": _resolve(__dirname, "src/"),
+  devServer: {
+    static: {
+      directory: path.join(__dirname, "dist"),
+    },
+    historyApiFallback: true,
+    hot: true,
+    compress: true,
+    port: 3000,
   },
-};
-export const plugins = [
-  new HtmlWebpackPlugin({
-    template: "src/index.html",
-  }),
-];
-export const devServer = {
-  static: {
-    directory: join(__dirname, "dist"),
-  },
-  historyApiFallback: true,
-  compress: true,
-  port: 3000,
+  devtool: "source-map",
 };
