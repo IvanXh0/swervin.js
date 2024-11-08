@@ -14,7 +14,9 @@ let renderer: DOMRenderer | null = null;
 function initApp() {
   const router = new Router();
 
-  router.addRoute("/", () => getComponent("TestComponent")({}));
+  router.addRoute("/", () => getComponent("CounterControls")());
+
+  router.addRoute("/display", () => getComponent("CounterDisplay")());
 
   window.navigate = (path: string) => router.navigate(path);
 

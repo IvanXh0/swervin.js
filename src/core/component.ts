@@ -1,21 +1,21 @@
-export type Props = Record<string, any>;
-
 export interface Component {
   render: () => string;
   onCreate?: () => void;
   onDestroy?: () => void;
 }
 
-export function createComponent(
-  template: (props?: any) => string,
-  setup?: (props?: any) => Partial<Component>,
-): (props?: any) => Component {
-  return (props = {}) => {
-    const setupResult = setup?.(props) || {};
+export type ComponentSetup = {
+  onCreate?: () => void;
+  onDestroy?: () => void;
+};
 
-    return {
-      render: () => template(props),
-      ...setupResult,
-    };
-  };
+export function createComponent(
+  template: () => string,
+  setup?: ComponentSetup,
+): () => Component {
+  return () => ({
+    render: template,
+    onCreate: setup?.onCreate,
+    onDestroy: setup?.onDestroy,
+  });
 }
