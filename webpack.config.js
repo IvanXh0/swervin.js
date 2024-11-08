@@ -1,5 +1,6 @@
 const path = require("path");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
+const webpack = require("webpack");
 
 module.exports = {
   mode: "development",
@@ -13,7 +14,13 @@ module.exports = {
     rules: [
       {
         test: /\.tsx?$/,
-        use: "ts-loader",
+        use: {
+          loader: "ts-loader",
+          options: {
+            transpileOnly: true,
+            experimentalWatchApi: true,
+          },
+        },
         exclude: /node_modules/,
       },
       {
@@ -33,15 +40,30 @@ module.exports = {
       template: "src/index.html",
       inject: true,
     }),
+    new webpack.HotModuleReplacementPlugin(),
   ],
   devServer: {
     static: {
       directory: path.join(__dirname, "dist"),
     },
     historyApiFallback: true,
-    hot: true,
+    hot: "only", // Only use HMR, don't fall back to live reload
+    watchFiles: ["src/**/*"],
     compress: true,
     port: 3000,
+    client: {
+      overlay: {
+        errors: true,
+        warnings: false,
+      },
+      progress: true,
+    },
   },
-  devtool: "source-map",
+  optimization: {
+    moduleIds: "named",
+  },
+  devtool: "eval-source-map",
+  cache: {
+    type: "filesystem",
+  },
 };

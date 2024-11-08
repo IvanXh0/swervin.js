@@ -7,10 +7,10 @@ export interface Component {
 }
 
 export function createComponent(
-  template: (props: Props) => string,
-  setup?: (props: Props) => Partial<Component>,
-): (props: Props) => Component {
-  return (props: Props) => {
+  template: (props?: any) => string,
+  setup?: (props?: any) => Partial<Component>,
+): (props?: any) => Component {
+  return (props = {}) => {
     const setupResult = setup?.(props) || {};
 
     return {

@@ -6,13 +6,21 @@ export class DOMRenderer {
   private container: HTMLElement;
   private router: Router;
   private currentComponent: Component | null = null;
+  private updateListener: () => void;
 
   constructor(container: HTMLElement, router: Router) {
     this.container = container;
     this.router = router;
+
+    this.updateListener = () => this.refresh();
+    window.addEventListener("componentUpdated", this.updateListener);
   }
 
   mount(): void {
+    this.refresh();
+  }
+
+  refresh(): void {
     effect(() => {
       const componentFactory = this.router.getCurrentComponent();
 
@@ -31,5 +39,9 @@ export class DOMRenderer {
         this.container.innerHTML = "<div>404 - Not Found</div>";
       }
     });
+  }
+
+  destroy(): void {
+    window.removeEventListener("componentUpdated", this.updateListener);
   }
 }
