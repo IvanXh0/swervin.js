@@ -1,10 +1,11 @@
 import { createComponent } from "@/core/component";
+import { html } from "@/core/html";
 import { counterState } from "@/store/counter";
 
 export default createComponent(() => {
   const count = counterState.get();
 
-  return `
+  return html`
     <div class="counter-display">
       <h2>Counter Display</h2>
       <div class="count">Current Count: ${count}</div>
