@@ -1,17 +1,17 @@
+import { JSXElement } from "./jsx";
+
 export interface Component {
-  render: () => string;
+  render: () => string | JSXElement;
   onCreate?: () => void;
   onDestroy?: () => void;
 }
 
-export type ComponentSetup = {
-  onCreate?: () => void;
-  onDestroy?: () => void;
-};
-
 export function createComponent(
-  template: () => string,
-  setup?: ComponentSetup,
+  template: () => string | JSXElement,
+  setup?: {
+    onCreate?: () => void;
+    onDestroy?: () => void;
+  },
 ): () => Component {
   return () => ({
     render: template,

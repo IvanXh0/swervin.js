@@ -1,6 +1,26 @@
 import { Router } from "@/router";
 import { Component } from "./component";
 import { effect } from "./effect";
+import { JSXElement } from "./jsx";
+
+export function renderToString(element: JSXElement | string | number): string {
+  if (typeof element === "string" || typeof element === "number") {
+    return String(element);
+  }
+
+  const { type, props, children } = element;
+
+  const attributes = Object.entries(props)
+    .filter(([_, value]) => value !== undefined && value !== null)
+    .map(([key, value]) => ` ${key}="${value}"`)
+    .join("");
+
+  const renderedChildren = children
+    .map((child) => renderToString(child))
+    .join("");
+
+  return `<${type}${attributes}>${renderedChildren}</${type}>`;
+}
 
 export class DOMRenderer {
   private container: HTMLElement;
@@ -31,14 +51,19 @@ export class DOMRenderer {
       }
 
       if (componentFactory) {
-        const newComponent = componentFactory();
-        this.currentComponent = newComponent;
+        const component = componentFactory();
+        this.currentComponent = component;
 
-        const renderedContent = newComponent.render();
-        this.container.innerHTML = renderedContent;
+        const rendered = component.render();
+        const content =
+          typeof rendered === "string"
+            ? rendered
+            : renderToString(rendered as JSXElement);
 
-        if (typeof newComponent.onCreate === "function") {
-          newComponent.onCreate();
+        this.container.innerHTML = content;
+
+        if (component.onCreate) {
+          component.onCreate();
         }
       } else {
         this.currentComponent = null;
@@ -54,7 +79,6 @@ export class DOMRenderer {
     ) {
       this.currentComponent.onDestroy();
     }
-
     window.removeEventListener("componentUpdated", this.updateListener);
   }
 }

@@ -5,6 +5,5 @@ import "./styles/main.css";
 createApp({
   routes: {
     "/": () => getComponent("CounterControls")(),
-    "/display": () => getComponent("CounterDisplay")(),
   },
 });

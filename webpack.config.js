@@ -18,7 +18,11 @@ module.exports = {
           {
             loader: "ts-loader",
             options: {
-              transpileOnly: true,
+              compilerOptions: {
+                jsx: "react",
+                jsxFactory: "createElement",
+                jsxFragmentFactory: "Fragment",
+              },
             },
           },
         ],
@@ -31,7 +35,7 @@ module.exports = {
     ],
   },
   resolve: {
-    extensions: [".tsx", ".ts", ".js"],
+    extensions: [".tsx", ".ts", ".js", ".css"],
     alias: {
       "@": path.resolve(__dirname, "src/"),
     },

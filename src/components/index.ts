@@ -1,11 +1,9 @@
 import { Component } from "@/core/component";
-import CounterDisplay from "./CounterDisplay";
 import CounterControls from "./CounterControls";
 
 type ComponentFactory = () => Component;
 
 export const components = new Map<string, ComponentFactory>([
-  ["CounterDisplay", CounterDisplay],
   ["CounterControls", CounterControls],
 ]);
 
