@@ -26,6 +26,7 @@ export class DOMRenderer {
   private container: HTMLElement;
   private router: Router;
   private currentComponent: Component | null = null;
+  private currentPath: string | null = null;
   private updateListener: () => void;
 
   constructor(container: HTMLElement, router: Router) {
@@ -40,28 +41,38 @@ export class DOMRenderer {
   }
 
   refresh(): void {
-    if (
-      this.currentComponent &&
-      typeof this.currentComponent.onDestroy === "function"
-    ) {
-      this.currentComponent.onDestroy();
-      this.currentComponent = null;
-    }
-
     effect(() => {
+      const newPath = window.location.pathname;
       const componentFactory = this.router.getCurrentComponent();
 
-      if (componentFactory) {
-        if (!this.currentComponent) {
+      if (this.currentPath !== newPath || !this.currentComponent) {
+        if (this.currentComponent?.onDestroy) {
+          this.currentComponent.onDestroy();
+        }
+
+        if (componentFactory) {
           const component = componentFactory();
           this.currentComponent = component;
+          this.currentPath = newPath;
+
+          const rendered = component.render();
+          const content =
+            typeof rendered === "string"
+              ? rendered
+              : renderToString(rendered as JSXElement);
+
+          this.container.innerHTML = content;
 
           if (component.onCreate) {
             queueMicrotask(() => component.onCreate?.());
           }
+        } else {
+          this.currentComponent = null;
+          this.currentPath = null;
+          this.container.innerHTML = "<div>404 - Not Found</div>";
         }
-
-        const rendered = this.currentComponent?.render();
+      } else {
+        const rendered = this.currentComponent.render();
         const content =
           typeof rendered === "string"
             ? rendered
@@ -70,9 +81,6 @@ export class DOMRenderer {
         if (this.container.innerHTML !== content) {
           this.container.innerHTML = content;
         }
-      } else {
-        this.currentComponent = null;
-        this.container.innerHTML = "<div>404 - Not Found</div>";
       }
     });
   }

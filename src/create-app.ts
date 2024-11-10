@@ -1,6 +1,6 @@
-import { Component } from "./core/component";
-import { DOMRenderer } from "./core/renderer";
-import { Router } from "./router";
+import { Component } from "@/core/component";
+import { DOMRenderer } from "@/core/renderer";
+import { Router } from "@/router";
 
 declare global {
   interface Window {

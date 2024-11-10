@@ -1,10 +1,12 @@
 import { Component } from "@/core/component";
 import CounterControls from "./CounterControls";
+import Testing from "./Testing";
 
 type ComponentFactory = () => Component;
 
 export const components = new Map<string, ComponentFactory>([
   ["CounterControls", CounterControls],
+  ["Testing", Testing],
 ]);
 
 export function getComponent(name: string): ComponentFactory {

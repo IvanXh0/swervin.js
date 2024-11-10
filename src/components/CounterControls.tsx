@@ -13,29 +13,32 @@ export default createComponent(
         <button onclick={emit(() => counter.reset())}>Reset</button>
       </div>
       <div>Count: {counter.signal.get().count}</div>
-      {/* Keyboard shortcuts will work on this component */}
+      <div onclick={emit(() => window.navigate("/testing"))}>
+        navigate to testing
+      </div>
     </div>
   ),
-  {
-    onCreate: () => {
-      // Setup keyboard shortcuts
-      const handleKeyPress = (e: KeyboardEvent) => {
-        if (e.key === "ArrowUp") counter.increment(1);
-        if (e.key === "ArrowDown") counter.decrement(1);
-        if (e.key === "r") counter.reset();
-      };
+  (() => {
+    let handleKeyPress: ((e: KeyboardEvent) => void) | null = null;
 
-      // Add the event listener
-      document.addEventListener("keydown", handleKeyPress);
+    return {
+      onCreate: () => {
+        handleKeyPress = (e: KeyboardEvent) => {
+          if (e.key === "ArrowUp") counter.increment(1);
+          if (e.key === "ArrowDown") counter.decrement(1);
+          if (e.key === "r") counter.reset();
+        };
 
-      // Return cleanup function from onCreate if needed
-      return () => {
-        document.removeEventListener("keydown", handleKeyPress);
-      };
-    },
-    onDestroy: () => {
-      // Any additional cleanup if needed
-      console.log("Component is being destroyed");
-    },
-  },
+        document.addEventListener("keydown", handleKeyPress);
+      },
+      onDestroy: () => {
+        // Remove the exact same handler function
+        if (handleKeyPress) {
+          document.removeEventListener("keydown", handleKeyPress);
+          handleKeyPress = null;
+        }
+        console.log("Component is being destroyed");
+      },
+    };
+  })(),
 );
