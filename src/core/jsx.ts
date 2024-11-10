@@ -44,25 +44,6 @@ export function createElement(
   };
 }
 
-// export function renderToString(element: JSXElement | string | number): string {
-//   if (typeof element === "string" || typeof element === "number") {
-//     return String(element);
-//   }
-//
-//   const { type, props, children } = element;
-//
-//   const attributes = Object.entries(props)
-//     .filter(([key]) => key !== "children")
-//     .map(([key, value]) => ` ${key}="${value}"`)
-//     .join("");
-//
-//   const renderedChildren = children
-//     .map((child) => renderToString(child as JSXElement | string | number))
-//     .join("");
-//
-//   return `<${type}${attributes}>${renderedChildren}</${type}>`;
-// }
-
 declare global {
   namespace JSX {
     interface Element extends JSXElement {}

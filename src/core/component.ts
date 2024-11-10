@@ -1,4 +1,5 @@
 import { JSXElement } from "./jsx";
+import { getCurrentHooks, resetHooks } from "./lifecycle";
 
 export interface Component {
   render: () => string | JSXElement;
@@ -8,14 +9,18 @@ export interface Component {
 
 export function createComponent(
   template: () => string | JSXElement,
-  setup?: {
-    onCreate?: () => void;
-    onDestroy?: () => void;
-  },
 ): () => Component {
+  resetHooks();
+
+  template();
+
+  const hooks = getCurrentHooks() || {};
+
+  resetHooks();
+
   return () => ({
     render: template,
-    onCreate: setup?.onCreate,
-    onDestroy: setup?.onDestroy,
+    onCreate: hooks.onCreate,
+    onDestroy: hooks.onDestroy,
   });
 }
