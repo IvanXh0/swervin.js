@@ -1,17 +1,16 @@
 import { createComponent } from "@/core/component";
+import { emit } from "@/core/emitter";
 import { html } from "@/core/html";
-import { counterState } from "@/store/counter";
+import { counter } from "@/store/counter";
 
-export default createComponent(() => {
-  const count = counterState.get();
-
-  return html`
-    <div class="counter-display">
-      <h2>Counter Display</h2>
-      <div class="count">Current Count: ${count}</div>
+export default createComponent(
+  () => html`
+    <div class="container">
+      <button onclick="${emit(() => counter.increment(1))}" class="btn">
+        +1
+      </button>
+      <div class="count">Count: ${counter.signal.get().count}</div>
     </div>
-    <div class="controls">
-      <button onclick="window.navigate('/')">Go to Controls</button>
-    </div>
-  `;
-});
+    <div>Go back home <button onclick="window.navigate('/')">Home</button></div>
+  `,
+);

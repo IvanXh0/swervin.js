@@ -1,23 +1,55 @@
 import { Signal } from "@/core/signal";
 
-export interface Store<T> {
-  state: Signal<T>;
-  dispatch(action: string, payload?: any): void;
+type PayloadFromReducer<T, R> = R extends (state: T) => T
+  ? void
+  : R extends (state: T, payload?: infer P) => T
+    ? P | undefined
+    : R extends (state: T, payload: infer P) => T
+      ? P
+      : never;
+
+export type Reducers<T> = {
+  [K: string]: (state: T, payload?: any) => T;
+};
+
+export type ActionCreators<T, R extends Reducers<T>> = {
+  [K in keyof R]: (payload: PayloadFromReducer<T, R[K]>) => void;
+};
+
+export interface Store<T, R extends Reducers<T>> {
+  signal: Signal<T>;
+  select: <U>(selector: (state: T) => U) => U;
+  dispatch(action: keyof R, payload?: any): void;
 }
 
-export function createStore<T>(
+export function createStore<T, R extends Reducers<T>>(
   initialState: T,
-  reducers: Record<string, (state: T, payload?: any) => T>,
-): Store<T> {
-  const state = new Signal<T>(initialState);
+  reducers: R,
+): Store<T, R> & ActionCreators<T, R> {
+  const signal = new Signal<T>(initialState);
 
-  return {
-    state,
-    dispatch(action: string, payload?: any) {
+  const store = {
+    signal,
+
+    select<U>(selector: (state: T) => U): U {
+      return selector(signal.get());
+    },
+
+    dispatch(action: keyof R, payload?: any) {
       const reducer = reducers[action];
       if (reducer) {
-        state.set(reducer(state.get(), payload));
+        signal.set(reducer(signal.get(), payload));
       }
     },
   };
+
+  const actionCreators = Object.keys(reducers).reduce(
+    (acc, type) => ({
+      ...acc,
+      [type]: (payload?: any) => store.dispatch(type, payload),
+    }),
+    {} as ActionCreators<T, R>,
+  );
+
+  return { ...store, ...actionCreators };
 }
