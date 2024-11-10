@@ -40,30 +40,35 @@ export class DOMRenderer {
   }
 
   refresh(): void {
+    if (
+      this.currentComponent &&
+      typeof this.currentComponent.onDestroy === "function"
+    ) {
+      this.currentComponent.onDestroy();
+      this.currentComponent = null;
+    }
+
     effect(() => {
       const componentFactory = this.router.getCurrentComponent();
 
-      if (
-        this.currentComponent &&
-        typeof this.currentComponent.onDestroy === "function"
-      ) {
-        this.currentComponent.onDestroy();
-      }
-
       if (componentFactory) {
-        const component = componentFactory();
-        this.currentComponent = component;
+        if (!this.currentComponent) {
+          const component = componentFactory();
+          this.currentComponent = component;
 
-        const rendered = component.render();
+          if (component.onCreate) {
+            queueMicrotask(() => component.onCreate?.());
+          }
+        }
+
+        const rendered = this.currentComponent?.render();
         const content =
           typeof rendered === "string"
             ? rendered
             : renderToString(rendered as JSXElement);
 
-        this.container.innerHTML = content;
-
-        if (component.onCreate) {
-          component.onCreate();
+        if (this.container.innerHTML !== content) {
+          this.container.innerHTML = content;
         }
       } else {
         this.currentComponent = null;
